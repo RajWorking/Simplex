@@ -13,8 +13,8 @@ b = np.array([float(x) for x in input().split()])
 b = np.append(b[:u], -b[u:])
 
 optim = Simplex(A, b, c)
-optim.benchmark()
+# optim.benchmark()
 optim.solve()
-
+optim.output()
 
 
