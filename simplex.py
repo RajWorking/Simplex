@@ -15,8 +15,10 @@ class Simplex:
         self.n = self.c.size  # n: number of variables
         self.m = self.b.size  # m: number of equations
 
-        self.basic_var = np.empty((0, self.m), dtype=np.int32)  # list of basic variables
+        # list of basic variables
+        self.basic_var = np.empty((0, self.m), dtype=np.int32)
         self.status = self.Status.SOLVING
+        self.blands_rule = False
 
     class Status(enum.Enum):
         SOLVING = 0
@@ -54,19 +56,29 @@ class Simplex:
         elif self.status == self.Status.UNBOUNDED:
             print("Unbounded")
 
-    def iteration(self) -> Status:
+    def detect_cycle(self, arr, ele):
+        if self.blands_rule:
+            return
+        if np.any([set(x) == set(ele) for x in arr]):
+            self.blands_rule = True
+
+    def iteration(self):
         basis = self.basic_var[-1]
-        if self.debug: print('Basis', basis)
+        if self.debug:
+            print('Basis', basis)
 
-        # TODO: detect cycling
+        self.detect_cycle(self.basic_var, basis)
 
-        entering_var = np.argmax(self.table[0][:-1])
+        obj_row = self.table[0][:-1]
+        entering_var = np.argmax(
+            obj_row > 0) if self.blands_rule else np.argmax(obj_row)
         if self.table[0][entering_var] <= 0:
             # all negative coefficients in row
             self.status = self.Status.OPTIMAL
             return
 
-        if self.debug: print('Entering Variable', entering_var)
+        if self.debug:
+            print('Entering Variable', entering_var)
 
         y = self.table.T[entering_var][1:]
 
@@ -81,7 +93,8 @@ class Simplex:
             [x_b[i]/y[i] if y[i] > 0 else np.inf for i in range(self.m)])
         leaving_var = np.argmin(ratios)
 
-        if self.debug: print('Leaving Variable', basis[leaving_var])
+        if self.debug:
+            print('Leaving Variable', basis[leaving_var])
 
         base_row = self.table[leaving_var + 1]
         base_row /= base_row[entering_var]
@@ -108,16 +121,14 @@ class Simplex:
         self.basic_var = np.append(
             self.basic_var, [np.arange(self.n - self.m, self.n)], axis=0)
 
-        i = 1
+        iter = 1
         while self.status == self.Status.SOLVING:
             if self.debug:
-                print('Iteration:', i)
+                print('Iteration:', iter)
                 self.visualize()
                 print('----')
             self.iteration()
-            i += 1
-        
-        
+            iter += 1
 
     def benchmark(self):
         '''
