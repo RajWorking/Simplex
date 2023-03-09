@@ -63,11 +63,9 @@ class Simplex:
             self.blands_rule = True
 
     def iteration(self):
-        basis = self.basic_var[-1]
+        basis = self.basic_var[-1].copy()
         if self.debug:
             print('Basis', basis)
-
-        self.detect_cycle(self.basic_var, basis)
 
         obj_row = self.table[0][:-1]
         entering_var = np.argmax(
@@ -107,6 +105,7 @@ class Simplex:
                 self.table[i] -= coeff * base_row
 
         basis[leaving_var] = entering_var
+        self.detect_cycle(self.basic_var, basis)
         self.basic_var = np.append(self.basic_var, [basis], axis=0)
         return
 
