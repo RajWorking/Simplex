@@ -1,9 +1,8 @@
-for i in {0..8}
+for i in {0..9}
 do
-    echo cases/inp-$i.txt
-    python 1.py < cases/inp-$i.txt
-    echo 
-    cat cases/out-$i.txt
-    echo
+    filename=cases/inp-$i.txt
+    echo $filename
+    sed '1,/^$/{/^$/!d}' $filename
+    python 1.py < $filename
     echo "------------------------------------"
 done

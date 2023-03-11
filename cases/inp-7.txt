@@ -8,3 +8,5 @@
 -1 1 2
 0 2 3
 6 -6 10 2 -4 4 10
+
+same as case-6 but negative b
