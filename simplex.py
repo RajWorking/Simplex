@@ -77,6 +77,7 @@ class Simplex:
             return
         if np.any([set(x) == set(ele) for x in arr]):
             self.blands_rule = True
+            print("Cycling detected")
 
     def iteration(self):
         basis = self.basic_var[-1].copy()
