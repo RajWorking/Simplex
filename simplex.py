@@ -3,6 +3,7 @@ import enum
 
 np.set_printoptions(linewidth=np.inf, suppress=True)
 
+# TODO: account for precision errors using negligible theta
 # TODO: replace for loops with list comprehension
 
 
@@ -145,7 +146,7 @@ class Simplex:
         A = np.append(A, art, axis=1)
         c = np.append(np.zeros(self.n), np.ones(art.shape[1]))
 
-        phase1 = Simplex(A, b, c)
+        phase1 = Simplex(A, b, c, self.debug)
         phase1.solve_tableau()
 
         res, _ = phase1.get_solution()
@@ -169,6 +170,7 @@ class Simplex:
 
         self.A = table[:, :-1]
         self.b = table[:, -1]
+        self.m = self.b.size
 
     def solve(self):
         self.standardize()
