@@ -1,6 +1,6 @@
 for i in {0..9}
 do
-    filename=cases/inp-$i.txt
+    filename=cases/1/inp-$i.txt
     echo $filename
     sed '1,/^$/{/^$/!d}' $filename
     python 1.py < $filename
