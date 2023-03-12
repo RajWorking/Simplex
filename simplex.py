@@ -66,6 +66,9 @@ class Simplex:
 
     def output(self):
         if self.status == self.Status.OPTIMAL:
+            if self.blands_rule:
+                print("Cycling detected")
+            
             res, x_optim = self.get_solution()
             print(res)
             print(*x_optim[:self.n-self.m])
@@ -79,7 +82,6 @@ class Simplex:
             return
         if np.any([set(x) == set(ele) for x in arr]):
             self.blands_rule = True
-            print("Cycling detected")
 
     def iteration(self):
         basis = self.basic_var[-1].copy()
@@ -198,13 +200,13 @@ class Simplex:
                 print('----')
             iter += 1
 
-    # COMMENT BEFORE SUBMIT
-    def benchmark(self):
-        '''
-        Checking actual solution using scipy
-        Must be run before solve.
-        '''
-        import scipy
-        res = scipy.optimize.linprog(self.c, A_ub=self.A, b_ub=self.b)
-        print(res.fun)
-        print(res.x)
+    # # COMMENT BEFORE SUBMIT
+    # def benchmark(self):
+    #     '''
+    #     Checking actual solution using scipy
+    #     Must be run before solve.
+    #     '''
+    #     import scipy
+    #     res = scipy.optimize.linprog(self.c, A_ub=self.A, b_ub=self.b)
+    #     print(res.fun)
+    #     print(res.x)
