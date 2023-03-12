@@ -3,8 +3,9 @@ import enum
 
 np.set_printoptions(linewidth=np.inf, suppress=True)
 
-# TODO: account for precision errors using negligible theta
 # TODO: replace for loops with list comprehension
+
+eta = 10 ** -8  # negligible value
 
 
 class Simplex:
@@ -43,7 +44,7 @@ class Simplex:
         ''' Convert to tableau format
         '''
         # initial basis
-        basis = [np.argmax((self.A.T == row).all(axis=1))
+        basis = [np.argmax(np.isclose(self.A.T, row, eta, eta).all(axis=1))
                  for row in np.eye(self.m)]
         self.basic_var = np.array([basis])
 
@@ -150,7 +151,7 @@ class Simplex:
         phase1.solve_tableau()
 
         res, _ = phase1.get_solution()
-        if res > 0:
+        if res > eta:
             self.status = self.Status.INFEASIBLE
             return
 
@@ -159,13 +160,13 @@ class Simplex:
 
         # remove artificial variables from basis
         for i, bs in enumerate(phase1.basic_var[-1]):
-            if (bs >= table.shape[1]-1) and np.any(table[i][:-1] != 0):
+            if (bs >= table.shape[1]-1) and np.any(abs(table[i][:-1]) >= eta):
                 j = np.argmax(table[i][:-1] != 0)
                 table = self.pivot(table.copy(), i, j)
 
         for i, row in enumerate(table):
             # eliminate zero rows
-            if np.all(row[:-1] == 0):
+            if np.all(row[:-1] < eta):
                 table = np.append(table[:i], table[i+1:], axis=0)
 
         self.A = table[:, :-1]
