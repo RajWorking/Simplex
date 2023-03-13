@@ -46,4 +46,11 @@ while True:
 
     # print('----')
 
-optim.output()
+if optim.status == optim.Status.OPTIMAL:    
+    res, x_optim = optim.get_solution()
+    print(res)
+    print(*x_optim[:optim.n-optim.m].astype(int))
+elif optim.status == optim.Status.UNBOUNDED:
+    print("Unbounded")
+elif optim.status == optim.Status.INFEASIBLE:
+    print("Infeasible")
