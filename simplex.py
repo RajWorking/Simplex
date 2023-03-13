@@ -68,7 +68,7 @@ class Simplex:
         if self.status == self.Status.OPTIMAL:
             if self.blands_rule:
                 print("Cycling detected")
-            
+
             res, x_optim = self.get_solution()
             print(res)
             print(*x_optim[:self.n-self.m])
@@ -91,7 +91,7 @@ class Simplex:
         obj_row = self.table[0][:-1]
         entering_var = np.argmax(
             obj_row > 0) if self.blands_rule else np.argmax(obj_row)
-        if self.table[0][entering_var] <= 0:
+        if self.table[0][entering_var] <= eta:
             # all negative coefficients in row
             self.status = self.Status.OPTIMAL
             return
@@ -101,7 +101,7 @@ class Simplex:
 
         y = self.table.T[entering_var][1:]
 
-        if np.all(y <= 0):
+        if np.all(y <= eta):
             # all negative coefficients in col
             self.status = self.Status.UNBOUNDED
             return
@@ -163,7 +163,7 @@ class Simplex:
         # remove artificial variables from basis
         for i, bs in enumerate(phase1.basic_var[-1]):
             if (bs >= table.shape[1]-1) and np.any(abs(table[i][:-1]) >= eta):
-                j = np.argmax(table[i][:-1] != 0)
+                j = np.argmax(abs(table[i][:-1]) >= eta)
                 table = self.pivot(table.copy(), i, j)
 
         for i, row in enumerate(table):
