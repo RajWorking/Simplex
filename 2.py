@@ -26,10 +26,10 @@ while True:
 
     # print(optim.table)
 
-    eqn = optim.table[1:, -1]
-
     if optim.status != optim.status.OPTIMAL:
         break  # no finite optimal solution
+    
+    eqn = optim.table[1:, -1]
 
     if np.allclose(eqn, np.floor(eqn), eta, eta):
         break  # integer solution found
